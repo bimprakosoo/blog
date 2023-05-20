@@ -33,10 +33,8 @@ class PostController extends Controller
       // Pass the posts data to the view
       return view('index', compact('posts', 'newestPosts'));
     } catch (GuzzleException $e) {
-      // Handle Guzzle exceptions
       return response()->json(['message' => 'An error occurred while fetching the posts.'], 500);
     } catch (\Exception $e) {
-      // Handle other exceptions
       return response()->json(['message' => 'An error occurred.', 'error' => $e->getMessage()], 500);
     }
   }
@@ -68,14 +66,15 @@ class PostController extends Controller
       'post_id' => 'required|exists:posts,id',
       'content' => 'required|string',
     ]);
-    
+  
+    // Extract the post_id and content from the request
     $post_id = $request->input('post_id');
     $content = $request->input('content');
     
     $client = new Client();
     
     try {
-      $response = $client->post('http://127.0.0.1:8000/api/post/comment', [
+      $client->post('http://127.0.0.1:8000/api/post/comment', [
         'headers' => [
           'Authorization' => 'Bearer vh5peF2KSuN7XHnk6hAhs46NCQ1t89OA9VSQo6Yc',
         ],
@@ -84,10 +83,6 @@ class PostController extends Controller
           'comment' => $content,
         ],
       ]);
-      
-      $commentJson = $response->getBody();
-      
-      $comment = json_decode($commentJson, true);
       
       return redirect()->back()->with('success', 'Comment posted successfully');
     } catch (\Exception $e) {
