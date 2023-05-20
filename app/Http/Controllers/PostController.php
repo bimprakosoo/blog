@@ -60,7 +60,39 @@ class PostController extends Controller
     
     // Pass the post data to the view
     return view('show', compact('post'));
-//    var_dump($post);
+  }
+  
+  public function comment(Request $request)
+  {
+    $request->validate([
+      'post_id' => 'required|exists:posts,id',
+      'content' => 'required|string',
+    ]);
+    
+    $post_id = $request->input('post_id');
+    $content = $request->input('content');
+    
+    $client = new Client();
+    
+    try {
+      $response = $client->post('http://127.0.0.1:8000/api/post/comment', [
+        'headers' => [
+          'Authorization' => 'Bearer vh5peF2KSuN7XHnk6hAhs46NCQ1t89OA9VSQo6Yc',
+        ],
+        'json' => [
+          'post_id' => $post_id,
+          'comment' => $content,
+        ],
+      ]);
+      
+      $commentJson = $response->getBody();
+      
+      $comment = json_decode($commentJson, true);
+      
+      return redirect()->back()->with('success', 'Comment posted successfully');
+    } catch (\Exception $e) {
+      return response()->json(['message' => 'An error occurred.', 'error' => $e->getMessage()], 500);
+    }
   }
   
 }
