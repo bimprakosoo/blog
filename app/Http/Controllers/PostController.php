@@ -47,7 +47,7 @@ class PostController extends Controller
       $token = $this->getAccessToken();
       $client = new Client();
       
-      $response = $client->get(env('API_URL') . "/post/$id", [
+      $response = $client->get(env('API_URL') . " /post/$id", [
         'headers' => [
           'Authorization' => 'Bearer ' . $token,
         ],
