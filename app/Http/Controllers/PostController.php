@@ -5,63 +5,65 @@ namespace App\Http\Controllers;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
-  public function index()
+
+  private function getAccessToken()
   {
+    return session('access_token');
+  }
+  
+  public function index(Request $request) {
     try {
-      // Create a new Guzzle HTTP client instance
+      $token = $this->getAccessToken();
       $client = new Client();
-    
-      // Get all posts
+  
       $response = $client->get('http://127.0.0.1:8000/api/post', [
         'headers' => [
-          'Authorization' => 'Bearer vh5peF2KSuN7XHnk6hAhs46NCQ1t89OA9VSQo6Yc',
+          'Authorization' => 'Bearer ' . $token,
         ],
       ]);
-    
-      // Get the response body as a JSON string
+      
       $postsJson = $response->getBody();
     
-      // Convert the JSON string to an associative array
       $posts = json_decode($postsJson, true);
     
-      // Get the newest three posts
       $newestPosts = array_slice($posts, 0, 3);
     
-      // Pass the posts data to the view
       return view('index', compact('posts', 'newestPosts'));
     } catch (GuzzleException $e) {
-      return response()->json(['message' => 'An error occurred while fetching the posts.'], 500);
+      return response()->json(['message' => 'An error occurred while fetching the posts.', 'error' => $e->getMessage()], 500);
     } catch (\Exception $e) {
       return response()->json(['message' => 'An error occurred.', 'error' => $e->getMessage()], 500);
     }
   }
   
-  public function show($id)
-  {
-    // Create a new Guzzle HTTP client instance
-    $client = new Client();
-    
-    $response = $client->get("http://127.0.0.1:8000/api/post/$id", [
-      'headers' => [
-        'Authorization' => 'Bearer vh5peF2KSuN7XHnk6hAhs46NCQ1t89OA9VSQo6Yc',
-      ],
-    ]);
-    
-    // Get the response body as a JSON string
-    $postJson = $response->getBody();
-    
-    // Convert the JSON string to an associative array
-    $post = json_decode($postJson, true);
-    
-    // Pass the post data to the view
-    return view('show', compact('post'));
+  public function show($id) {
+    try {
+      $token = $this->getAccessToken();
+      $client = new Client();
+      
+      $response = $client->get("http://127.0.0.1:8000/api/post/$id", [
+        'headers' => [
+          'Authorization' => 'Bearer ' . $token,
+        ],
+      ]);
+      
+      $postJson = $response->getBody();
+      
+      $post = json_decode($postJson, true);
+      
+      return view('show', compact('post'));
+    } catch (GuzzleException $e) {
+      return response()->json(['message' => 'An error occurred while fetching the posts.', 'error' => $e->getMessage()], 500);
+    } catch (\Exception $e) {
+      return response()->json(['message' => 'An error occurred.', 'error' => $e->getMessage()], 500);
+    }
   }
   
-  public function comment(Request $request)
-  {
+  public function comment(Request $request) {
     $request->validate([
       'post_id' => 'required|exists:posts,id',
       'content' => 'required|string',
@@ -74,9 +76,10 @@ class PostController extends Controller
     $client = new Client();
     
     try {
+      $token = $this->getAccessToken();
       $client->post('http://127.0.0.1:8000/api/post/comment', [
         'headers' => [
-          'Authorization' => 'Bearer vh5peF2KSuN7XHnk6hAhs46NCQ1t89OA9VSQo6Yc',
+          'Authorization' => 'Bearer ' . $token,
         ],
         'json' => [
           'post_id' => $post_id,

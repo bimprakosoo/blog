@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,8 +18,17 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+// Login route
+Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('login', [AuthController::class, 'login'])->name('login.submit');
 
-Route::get('posts', [PostController::class, 'index']);
+// Registration route
+Route::get('register', [AuthController::class, 'showRegistrationForm'])->name('register');
+Route::post('register', [AuthController::class, 'register'])->name('register.submit');
+
+Route::get('posts', [PostController::class, 'index'])->name('posts');
 Route::get('posts/{id}', [PostController::class, 'show'])->name('post.show');
-Route::post('post/comment', [PostController::class, 'comment'])->name('post.comment');
 
+//Route::middleware('auth:sanctum')->group(function () {
+  Route::post('post/comment', [PostController::class, 'comment'])->name('post.comment');
+//});
