@@ -41,5 +41,19 @@ class AuthController extends Controller
     ]);
     return redirect()->route('login');
   }
+  
+  public function logout() {
+    $accessToken = session('access_token');
+    
+    $client = new Client();
+    $response = $client->post(env('API_URL') . '/logout', [
+      'headers' => [
+        'Authorization' => 'Bearer ' . $accessToken,
+      ],
+    ]);
+  
+    session()->forget('access_token');
+    return redirect()->route('posts');
+  }
 }
 

@@ -18,13 +18,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-// Login route
 Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('login.submit');
 
-// Registration route
 Route::get('register', [AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('register', [AuthController::class, 'register'])->name('register.submit');
+
+Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('posts', [PostController::class, 'index'])->name('posts');
 Route::get('posts/{id}', [PostController::class, 'show'])->name('post.show');

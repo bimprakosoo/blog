@@ -20,18 +20,10 @@ class PostController extends Controller
       $token = $this->getAccessToken();
       $client = new Client();
   
-      $response = $client->get(env('API_URL') . '/post', [
-        'headers' => [
-          'Authorization' => 'Bearer ' . $token,
-        ],
-      ]);
-      
+      $response = $client->get(env('API_URL') . '/post');
       $postsJson = $response->getBody();
-    
       $posts = json_decode($postsJson, true);
-    
       $newestPosts = array_slice($posts, 0, 3);
-      
       $user = session('user');
     
       return view('index', compact('posts', 'newestPosts', 'token', 'user'));
@@ -47,17 +39,13 @@ class PostController extends Controller
       $token = $this->getAccessToken();
       $client = new Client();
       
-      $response = $client->get(env('API_URL') . "/post/$id", [
-        'headers' => [
-          'Authorization' => 'Bearer ' . $token,
-        ],
-      ]);
-      
+      $response = $client->get(env('API_URL') . "/post/$id");
       $postJson = $response->getBody();
-      
       $post = json_decode($postJson, true);
-      
-      return view('show', compact('post', 'token'));
+      $user = session('user');
+  
+  
+      return view('show', compact('post', 'token', 'user'));
     } catch (GuzzleException $e) {
       return response()->json(['message' => 'An error occurred while fetching the posts.', 'error' => $e->getMessage()], 500);
     } catch (\Exception $e) {
@@ -71,7 +59,6 @@ class PostController extends Controller
       'content' => 'required|string',
     ]);
   
-    // Extract the post_id and content from the request
     $post_id = $request->input('post_id');
     $content = $request->input('content');
     
