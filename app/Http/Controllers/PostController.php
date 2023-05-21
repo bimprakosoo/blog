@@ -15,12 +15,12 @@ class PostController extends Controller
     return session('access_token');
   }
   
-  public function index(Request $request) {
+  public function index() {
     try {
       $token = $this->getAccessToken();
       $client = new Client();
   
-      $response = $client->get('http://127.0.0.1:8000/api/post', [
+      $response = $client->get(env('API_URL') . '/post', [
         'headers' => [
           'Authorization' => 'Bearer ' . $token,
         ],
@@ -31,8 +31,10 @@ class PostController extends Controller
       $posts = json_decode($postsJson, true);
     
       $newestPosts = array_slice($posts, 0, 3);
+      
+      $user = session('user');
     
-      return view('index', compact('posts', 'newestPosts'));
+      return view('index', compact('posts', 'newestPosts', 'token', 'user'));
     } catch (GuzzleException $e) {
       return response()->json(['message' => 'An error occurred while fetching the posts.', 'error' => $e->getMessage()], 500);
     } catch (\Exception $e) {
@@ -45,7 +47,7 @@ class PostController extends Controller
       $token = $this->getAccessToken();
       $client = new Client();
       
-      $response = $client->get("http://127.0.0.1:8000/api/post/$id", [
+      $response = $client->get(env('API_URL') . "/post/$id", [
         'headers' => [
           'Authorization' => 'Bearer ' . $token,
         ],
@@ -55,7 +57,7 @@ class PostController extends Controller
       
       $post = json_decode($postJson, true);
       
-      return view('show', compact('post'));
+      return view('show', compact('post', 'token'));
     } catch (GuzzleException $e) {
       return response()->json(['message' => 'An error occurred while fetching the posts.', 'error' => $e->getMessage()], 500);
     } catch (\Exception $e) {
@@ -77,7 +79,7 @@ class PostController extends Controller
     
     try {
       $token = $this->getAccessToken();
-      $client->post('http://127.0.0.1:8000/api/post/comment', [
+      $client->post(env('API_URL') . '/post/comment', [
         'headers' => [
           'Authorization' => 'Bearer ' . $token,
         ],

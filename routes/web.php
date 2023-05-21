@@ -28,7 +28,4 @@ Route::post('register', [AuthController::class, 'register'])->name('register.sub
 
 Route::get('posts', [PostController::class, 'index'])->name('posts');
 Route::get('posts/{id}', [PostController::class, 'show'])->name('post.show');
-
-//Route::middleware('auth:sanctum')->group(function () {
-  Route::post('post/comment', [PostController::class, 'comment'])->name('post.comment');
-//});
+Route::post('post/comment', [PostController::class, 'comment'])->name('post.comment');

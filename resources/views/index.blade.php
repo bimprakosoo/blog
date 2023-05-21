@@ -3,7 +3,7 @@
 @section('content')
   <div class="container mx-auto py-8">
     <div class="flex justify-end">
-      @guest
+      @if(empty($token))
         <div class="mb-4">
           <a href="{{ route('login') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Login
@@ -13,12 +13,15 @@
             Register
           </a>
         </div>
-      @endguest
-      @auth
+      @else
         <div class="mb-4">
-          <p class="text-lg">Logged in as: {{ auth()->user()->name }}</p>
+          <p class="text-lg">Logged in as: {{ $user['name'] }}</p>
+{{--          <a href="{{ route('logout') }}"--}}
+{{--             class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">--}}
+{{--            Register--}}
+{{--          </a>--}}
         </div>
-      @endauth
+      @endif
     </div>
     <div class="flex flex-wrap -mx-4">
       <div class="w-3/4 px-4">

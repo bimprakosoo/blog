@@ -16,19 +16,16 @@ class AuthController extends Controller
     $credentials = $request->only('email', 'password');
     
     $client = new Client();
-    $response = $client->post('http://127.0.0.1:8000/api/login', [
+    $response = $client->post(env('API_URL') . '/login', [
       'form_params' => $credentials,
     ]);
     
     $data = json_decode($response->getBody(), true);
     
     session(['access_token' => $data['token']]);
-    $accessToken = session('access_token');
+    session(['user' => $data['user']]);
     return redirect()
-      ->route('posts')
-      ->withHeaders([
-        'Authorization' => 'Bearer ' . $accessToken,
-      ]);
+      ->route('posts');
   }
   
   public function showRegistrationForm() {
@@ -39,7 +36,7 @@ class AuthController extends Controller
     $data = $request->only('name', 'email', 'password');
     
     $client = new Client();
-    $response = $client->post('http://127.0.0.1:8000/api/register', [
+    $response = $client->post(env('API_URL') . '/register', [
       'form_params' => $data,
     ]);
     return redirect()->route('login');

@@ -17,17 +17,19 @@
 
       <h3 class="text-lg font-bold mb-2">Comments</h3>
       <div class="mt-4">
-        <!-- Comment Form -->
-        <form action="{{ route('post.comment') }}" method="POST">
-          @csrf
-          <input type="hidden" name="post_id" value="{{ $post[0]['id'] }}">
-          <textarea name="content" class="w-full bg-gray-100 rounded-lg p-2" placeholder="Write a comment"></textarea>
-          <button type="submit" class="bg-blue-600 text-white rounded-lg px-4 py-2 mt-2">Submit</button>
-        </form>
+        <!-- Comment Form - Display only if user is authenticated -->
+        @if(isset($token))
+          <form action="{{ route('post.comment') }}" method="POST">
+            @csrf
+            <input type="hidden" name="post_id" value="{{ $post[0]['id'] }}">
+            <textarea name="content" class="w-full bg-gray-100 rounded-lg p-2" placeholder="Write a comment"></textarea>
+            <button type="submit" class="bg-blue-600 text-white rounded-lg px-4 py-2 mt-2">Submit</button>
+          </form>
+        @else
+          <p class="text-gray-600">You must be logged in to submit a comment.</p>
+        @endif
       </div>
-
       <hr class="my-4">
-
       <h3 class="text-lg font-bold mb-2">Existing Comments</h3>
       <div class="mt-4">
         <!-- Display Existing Comments -->
